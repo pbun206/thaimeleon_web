@@ -1,0 +1,38 @@
+[package]
+name = "thaimeleon_lib"
+version = "0.1.3"
+license-file = "../LICENSES/license.md"
+repository = "https://codeberg.org/thairanaru/thaimeleon"
+description = "Create a color scheme based on an image"
+categories = ["command-line-utilities"]
+# exclude = ["assets/"]
+edition = "2024"
+
+[lib]
+crate-type = ["cdylib", "rlib"]
+
+[package.metadata.wasm-pack.profile.release]
+# wasm-pack 0.14 ships an old wasm-opt that rejects modern Rust output.
+# Disable it; install binaryen system-wide and run wasm-opt as a post-build step if size matters.
+wasm-opt = false
+
+[dependencies]
+quantette = "0.5.0"
+serde = { version = "1.0.219", features = ["derive"] }
+indexmap = {version = "2.9.0", features = ["serde"]}
+palette = { version = "0.7.6", features = ["serde", "serializing", "std"] }
+ordered-float = "4.6.0"
+itertools = "0.14.0"
+derive_more = { version = "2.0.1", features = ["display", "error", "from"] }
+rayon = { version = "1.11.0", optional = true }
+wasm-bindgen = { version = "0.2", optional = true }
+serde-wasm-bindgen = { version = "0.6", optional = true }
+console_error_panic_hook = { version = "0.1", optional = true }
+
+[target.'cfg(all(target_arch = "wasm32", target_os = "unknown"))'.dependencies]
+getrandom = { version = "0.3", features = ["wasm_js"] }
+
+[features]
+default = ["parallel"]
+parallel = ["dep:rayon"]
+wasm = ["dep:wasm-bindgen", "dep:serde-wasm-bindgen", "dep:console_error_panic_hook"]
