@@ -117,7 +117,7 @@ impl NamedHues<OklabHue> {
         let cyan = calculate_hue(175.0, 197.0, 220.0);
         let blue = calculate_hue(220.0, 260.0, 290.0);
         let purple = calculate_hue(310.0, 320.0, 337.5);
-        let magenta = calculate_hue(310.0, 350.0, 350.0);
+        let magenta = calculate_hue(335.0, 350.0, 350.0);
 
         Self {
             red,
