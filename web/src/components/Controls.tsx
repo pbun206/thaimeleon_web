@@ -44,18 +44,16 @@ export default function Controls({ config, onChange }: Props) {
 
   const updateDps = (theme: "light" | "dark", key: DpsKey, value: number) => {
     const themeConfig: ThemeConfig = { ...draft[theme], [key]: value };
-    setDraft({ ...draft, [theme]: themeConfig });
-  };
-
-  const applyConfig = () => {
-    onChange(draft);
-    setJsonText(JSON.stringify(draft, null, 2));
+    const next: Config = { ...draft, [theme]: themeConfig };
+    setDraft(next);
+    setJsonText(JSON.stringify(next, null, 2));
     setJsonError(null);
   };
 
-  const applyJson = () => {
+  const handleJsonChange = (text: string) => {
+    setJsonText(text);
     try {
-      const parsed = JSON.parse(jsonText) as Partial<Config>;
+      const parsed = JSON.parse(text) as Partial<Config>;
       const merged: Config = {
         ...DEFAULT_CONFIG,
         ...parsed,
@@ -67,13 +65,15 @@ export default function Controls({ config, onChange }: Props) {
         throw new Error("k_means_count must be 1..255");
       }
       merged.k_means_count = Math.round(k);
-      onChange(merged);
       setDraft(merged);
-      setJsonText(JSON.stringify(merged, null, 2));
       setJsonError(null);
     } catch (e) {
       setJsonError(String(e));
     }
+  };
+
+  const apply = () => {
+    onChange(draft);
   };
 
   return (
@@ -107,16 +107,15 @@ export default function Controls({ config, onChange }: Props) {
       <div className="controls-body">
         <textarea
           value={jsonText}
-          onChange={(e) => setJsonText(e.target.value)}
+          onChange={(e) => handleJsonChange(e.target.value)}
           rows={20}
           spellCheck={false}
         />
       </div>
       <div className="row-control">
-        <button onClick={applyConfig} disabled={!dirty}>
-          apply config{dirty ? " *" : ""}
+        <button onClick={apply} disabled={!dirty}>
+          apply{dirty ? " *" : ""}
         </button>
-        <button onClick={applyJson}>apply json</button>
         <button onClick={() => onChange(DEFAULT_CONFIG)}>reset</button>
         <button onClick={copy}>{copied ? "copied!" : "copy"}</button>
       </div>

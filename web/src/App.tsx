@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import init, { generate_scheme } from "./wasm/thaimeleon_lib.js";
 import { Config, DEFAULT_CONFIG, Scheme } from "./types";
+import defaultSchemes from "./defaultSchemes.json";
 import ImagePicker, { decodeFromUrl } from "./components/ImagePicker";
 import Swatches from "./components/Swatches";
 import Controls from "./components/Controls";
@@ -33,11 +34,10 @@ export default function App() {
     height: number;
     url: string;
   } | null>(null);
-  const [schemes, setSchemes] = useState<Pair>(null);
+  const [schemes, setSchemes] = useState<Pair>(defaultSchemes as Pair);
   const [config, setConfig] = useState<Config>(DEFAULT_CONFIG);
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
-  const [defaultFailed, setDefaultFailed] = useState(false);
   const [prefersDark, setPrefersDark] = useState(
     () => window.matchMedia("(prefers-color-scheme: dark)").matches,
   );
@@ -55,9 +55,7 @@ export default function App() {
       .then((p) => {
         if (!cancelled) setPixels(p);
       })
-      .catch(() => {
-        if (!cancelled) setDefaultFailed(true);
-      });
+      .catch(() => {});
     return () => {
       cancelled = true;
     };
@@ -125,40 +123,27 @@ export default function App() {
     applyScheme(effectiveDark ? schemes.dark : schemes.light);
   }, [schemes, effectiveDark]);
 
-  const picker = (
-    <ImagePicker
-      onImage={(p) => {
-        setPixels(p);
-        setError(null);
-      }}
-      onError={setError}
-      preview={pixels?.url}
-    />
-  );
-
   return (
     <main>
       <ThemeToggle mode={mode} onChange={setMode} />
-      {schemes ? (
-        <>
-          {picker}
-          {loading && <p className="loading">generating…</p>}
-          {error && <p className="error">{error}</p>}
-          {!loading && (
-            <Swatches scheme={effectiveDark ? schemes.dark : schemes.light} />
-          )}
-          {!loading && <Results light={schemes.light} dark={schemes.dark} />}
-          <Controls config={config} onChange={setConfig} />
-          <Info />
-        </>
-      ) : defaultFailed ? (
-        <>
-          {picker}
-          {error && <p className="error">{error}</p>}
-        </>
-      ) : (
-        <p className="loading">loading…</p>
+      <ImagePicker
+        onImage={(p) => {
+          setPixels(p);
+          setError(null);
+        }}
+        onError={setError}
+        preview={pixels?.url ?? "default.webp"}
+      />
+      {loading && <p className="loading">generating…</p>}
+      {error && <p className="error">{error}</p>}
+      {schemes && !loading && (
+        <Swatches scheme={effectiveDark ? schemes.dark : schemes.light} />
       )}
+      {schemes && !loading && (
+        <Results light={schemes.light} dark={schemes.dark} />
+      )}
+      <Controls config={config} onChange={setConfig} />
+      <Info />
     </main>
   );
 }

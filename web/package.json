@@ -5,6 +5,8 @@
   "type": "module",
   "scripts": {
     "wasm": "RUSTFLAGS='--cfg getrandom_backend=\"wasm_js\"' wasm-pack build ../thaimeleon_lib --target web --no-default-features --features wasm && rm -rf src/wasm && cp -r ../thaimeleon_lib/pkg src/wasm",
+    "wasm-node": "RUSTFLAGS='--cfg getrandom_backend=\"wasm_js\"' wasm-pack build ../thaimeleon_lib --target nodejs --out-dir pkg-node --no-default-features --features wasm",
+    "gen-default": "npm run wasm-node && node scripts/gen-default-schemes.mjs && rm -rf ../thaimeleon_lib/pkg-node",
     "predev": "npm run wasm",
     "prebuild": "npm run wasm",
     "dev": "vite",
@@ -19,6 +21,7 @@
     "@types/react": "^18.3.12",
     "@types/react-dom": "^18.3.1",
     "@vitejs/plugin-react": "^4.3.4",
+    "sharp": "^0.34.5",
     "typescript": "^5.6.3",
     "vite": "^6.0.5"
   }
