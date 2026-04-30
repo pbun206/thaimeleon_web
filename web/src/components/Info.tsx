@@ -76,6 +76,80 @@ export default function Info() {
         </p>
       </Block>
 
+      <Block q="should i actually use this in production? is these color schemes truely acessible?">
+        <p>the answer is probably not. there are three reasons.</p>
+        <ol>
+          <li>
+            aesthic pleasing often lead inacessible color schemes. thaimeleon
+            aims for the goldilocks, but that is largely person to person
+          </li>
+          <li>
+            for licensing reasons, we cannot use{" "}
+            <A href="https://apcacontrast.com/">apca</A>, the current candidate
+            of wcag 3.0 and the best contrast formula i know of
+          </li>
+          <li>
+            colors alone do not promise accessbility. boldness, font, context,
+            font size are also players
+          </li>
+        </ol>
+        <p>
+          for production, i suggest moving dps contrast higher and running some
+          colors through <A href="https://apcacontrast.com/">apca</A> and
+          standardize font sizes to ensure all colors are fair
+        </p>
+      </Block>
+
+      <Block q="so what these color names mean?">
+        <p>the colors can be represented into five sets</p>
+        <p>
+          the first set represents background colors where you can add set four
+          or five colors as the foreground. the first set includes the base
+          colors
+        </p>
+        <p>
+          the second set represents background colors where you can add set
+          five colors as the foreground. this incldues all the surface colors
+          as well background accent colors
+        </p>
+        <p>
+          the third set represents colors that lie between background and
+          foreground. this includes muted and regular accent colors
+        </p>
+        <p>
+          the fourth and fifth set are foreground colors. the fourth set
+          includes subtext and foreground accent while fifth set includes high
+          contrast foreground accents and text. high contrast foreground
+          accent might be less reliable though so i suggest checking them
+          through using <A href="https://apcacontrast.com/">apca</A> before
+          using them. you could also these colors as background colors
+        </p>
+        <p>when it comes to use the colors, here what i suggest:</p>
+        <ul>
+          <li>
+            be cautious of bold weights. colors appear differently under
+            weights. considering using underlining instead.
+          </li>
+          <li>
+            for syntax colors, here is a{" "}
+            <A href="https://tonsky.me/blog/syntax-highlighting/">blog post</A>{" "}
+            i mostly agree with.
+          </li>
+          <li>
+            be cautious of bold weights. colors appear differently under
+            weights. considering using underlining instead.
+          </li>
+          <li>
+            feel free to make exceptions when you see fit. for example, for
+            giant text, it might be better to use a set 3 over set 1. although
+            not ideal, you might want to grab out an{" "}
+            <A href="https://oklch.com/">oklch color picker</A> and make
+            colors outside the palette. although aesthetics are cool,
+            accessibility is still king.
+          </li>
+        </ul>
+      </Block>
+
       <Block q="this is slow!">
         <p>
           from testing, the largest bottle neck of the program is purely opening
@@ -93,7 +167,8 @@ export default function Info() {
             please send an issue or patch
           </A>
           . furthermore, i suggest manifesting your preferred color through{" "}
-          <A href="https://oklch.com/">a oklch picker</A>
+          <A href="https://oklch.com/">a oklch picker</A>, testing it with{" "}
+          <A href="https://apcacontrast.com/">apca</A>
         </p>
       </Block>
 
@@ -143,7 +218,7 @@ export default function Info() {
         </ul>
       </Block>
 
-      <Block q="supporting the creator (me!)">
+      <Block q="donations">
         <p>
           yes, i am an unemployed university student. no, i don't need money at
           the moment. i ask you to donate that money to{" "}

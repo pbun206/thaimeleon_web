@@ -1,2 +1,4 @@
 /test_images
 /target
+Cargo.lock
+pkg/

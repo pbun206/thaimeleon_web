@@ -6,6 +6,7 @@ function labelColor(label: string, isDark: boolean): string {
     label.startsWith("surface") ||
     label === "base" ||
     label === "base high" ||
+    label === "faint" ||
     label.startsWith("bg")
   ) {
     return "var(--fg)";
@@ -70,6 +71,7 @@ export default function Swatches({ scheme }: { scheme: Scheme }) {
     s.surface_high,
     s.surface_higher,
     s.surface_highest,
+    s.faint,
     s.muted,
     s.subtext,
     s.text,
@@ -81,6 +83,7 @@ export default function Swatches({ scheme }: { scheme: Scheme }) {
     "surface high",
     "surface higher",
     "surface highest",
+    "faint",
     "muted",
     "subtext",
     "text",

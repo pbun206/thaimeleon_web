@@ -18,8 +18,7 @@ function targetDims(w: number, h: number): [number, number] {
   return [newW, newH];
 }
 
-async function decode(file: File) {
-  const url = URL.createObjectURL(file);
+export async function decodeFromUrl(url: string) {
   const img = new Image();
   img.src = url;
   await img.decode();
@@ -37,6 +36,10 @@ async function decode(file: File) {
     height: h,
     url,
   };
+}
+
+async function decode(file: File) {
+  return decodeFromUrl(URL.createObjectURL(file));
 }
 
 export default function ImagePicker({ onImage, onError, preview }: Props) {

@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import init, { generate_scheme } from "./wasm/thaimeleon_lib.js";
 import { Config, DEFAULT_CONFIG, Scheme } from "./types";
-import ImagePicker from "./components/ImagePicker";
+import ImagePicker, { decodeFromUrl } from "./components/ImagePicker";
 import Swatches from "./components/Swatches";
 import Controls from "./components/Controls";
 import Results from "./components/Results";
@@ -19,6 +19,7 @@ function applyScheme(s: Scheme) {
   r.setProperty("--surface-low", s.surfaces.surface_low);
   r.setProperty("--surface-high", s.surfaces.surface_high);
   r.setProperty("--surface-highest", s.surfaces.surface_highest);
+  r.setProperty("--faint", s.surfaces.faint);
   r.setProperty("--hairline", s.surfaces.muted);
   r.setProperty("--rg-accent-1", s.rg_accents[0]);
   r.setProperty("--fg-accent-1", s.fg_accents[0]);
@@ -26,7 +27,6 @@ function applyScheme(s: Scheme) {
 }
 
 export default function App() {
-  const [ready, setReady] = useState(false);
   const [pixels, setPixels] = useState<{
     rgba: Uint8Array;
     width: number;
@@ -37,6 +37,7 @@ export default function App() {
   const [config, setConfig] = useState<Config>(DEFAULT_CONFIG);
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
+  const [defaultFailed, setDefaultFailed] = useState(false);
   const [prefersDark, setPrefersDark] = useState(
     () => window.matchMedia("(prefers-color-scheme: dark)").matches,
   );
@@ -48,15 +49,25 @@ export default function App() {
     localStorage.setItem("themeMode", mode);
   }, [mode]);
 
+  useEffect(() => {
+    let cancelled = false;
+    decodeFromUrl("default.webp")
+      .then((p) => {
+        if (!cancelled) setPixels(p);
+      })
+      .catch(() => {
+        if (!cancelled) setDefaultFailed(true);
+      });
+    return () => {
+      cancelled = true;
+    };
+  }, []);
+
   const effectiveDark = mode === "dark" || (mode === "auto" && prefersDark);
 
   useEffect(() => {
     document.documentElement.classList.toggle("light", !effectiveDark);
   }, [effectiveDark]);
-
-  useEffect(() => {
-    init().then(() => setReady(true)).catch((e) => setError(String(e)));
-  }, []);
 
   useEffect(() => {
     const mq = window.matchMedia("(prefers-color-scheme: dark)");
@@ -66,69 +77,88 @@ export default function App() {
   }, []);
 
   useEffect(() => {
-    if (!ready || !pixels) return;
+    if (!pixels) return;
     setLoading(true);
     setError(null);
     let cancelled = false;
-    const id = setTimeout(() => {
-      try {
-        const light = generate_scheme(
-          pixels.rgba,
-          pixels.width,
-          pixels.height,
-          1,
-          config,
-        ) as Scheme;
-        const dark = generate_scheme(
-          pixels.rgba,
-          pixels.width,
-          pixels.height,
-          0,
-          config,
-        ) as Scheme;
-        if (!cancelled) setSchemes({ light, dark });
-      } catch (e) {
-        if (!cancelled) {
-          const msg =
-            e instanceof Error ? e.message : String(e);
-          setError(`scheme generation failed: ${msg}`);
+    init()
+      .then(() => {
+        if (cancelled) return;
+        try {
+          const light = generate_scheme(
+            pixels.rgba,
+            pixels.width,
+            pixels.height,
+            1,
+            config,
+          ) as Scheme;
+          const dark = generate_scheme(
+            pixels.rgba,
+            pixels.width,
+            pixels.height,
+            0,
+            config,
+          ) as Scheme;
+          if (!cancelled) setSchemes({ light, dark });
+        } catch (e) {
+          if (!cancelled) {
+            const msg = e instanceof Error ? e.message : String(e);
+            setError(`scheme generation failed: ${msg}`);
+          }
+        } finally {
+          if (!cancelled) setLoading(false);
         }
-      } finally {
-        if (!cancelled) setLoading(false);
-      }
-    }, 0);
+      })
+      .catch((e) => {
+        if (!cancelled) {
+          setError(`wasm init failed: ${String(e)}`);
+          setLoading(false);
+        }
+      });
     return () => {
       cancelled = true;
-      clearTimeout(id);
     };
-  }, [ready, pixels, config]);
+  }, [pixels, config]);
 
   useEffect(() => {
     if (!schemes) return;
     applyScheme(effectiveDark ? schemes.dark : schemes.light);
   }, [schemes, effectiveDark]);
 
+  const picker = (
+    <ImagePicker
+      onImage={(p) => {
+        setPixels(p);
+        setError(null);
+      }}
+      onError={setError}
+      preview={pixels?.url}
+    />
+  );
+
   return (
     <main>
       <ThemeToggle mode={mode} onChange={setMode} />
-      <ImagePicker
-        onImage={(p) => {
-          setPixels(p);
-          setError(null);
-        }}
-        onError={setError}
-        preview={pixels?.url}
-      />
-      {loading && <p className="loading">generating…</p>}
-      {error && <p className="error">{error}</p>}
-      {schemes && !loading && (
-        <Swatches scheme={effectiveDark ? schemes.dark : schemes.light} />
+      {schemes ? (
+        <>
+          {picker}
+          {loading && <p className="loading">generating…</p>}
+          {error && <p className="error">{error}</p>}
+          {!loading && (
+            <Swatches scheme={effectiveDark ? schemes.dark : schemes.light} />
+          )}
+          {!loading && <Results light={schemes.light} dark={schemes.dark} />}
+          <Controls config={config} onChange={setConfig} />
+          <Info />
+        </>
+      ) : defaultFailed ? (
+        <>
+          {picker}
+          {error && <p className="error">{error}</p>}
+        </>
+      ) : (
+        <p className="loading">loading…</p>
       )}
-      {schemes && !loading && (
-        <Results light={schemes.light} dark={schemes.dark} />
-      )}
-      <Controls config={config} onChange={setConfig} />
-      <Info />
     </main>
   );
 }

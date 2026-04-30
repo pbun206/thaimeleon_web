@@ -1,5 +1,5 @@
 [workspace]
-members = ["thaimel", "thaimeleon_lib"]
+members = ["thaimeleon_lib"]
 resolver = "3"
 
 [profile.release]

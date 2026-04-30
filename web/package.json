@@ -4,7 +4,7 @@
   "version": "0.0.0",
   "type": "module",
   "scripts": {
-    "wasm": "wasm-pack build ../thaimeleon_lib --target web --no-default-features --features wasm && rm -rf src/wasm && cp -r ../thaimeleon_lib/pkg src/wasm",
+    "wasm": "RUSTFLAGS='--cfg getrandom_backend=\"wasm_js\"' wasm-pack build ../thaimeleon_lib --target web --no-default-features --features wasm && rm -rf src/wasm && cp -r ../thaimeleon_lib/pkg src/wasm",
     "predev": "npm run wasm",
     "prebuild": "npm run wasm",
     "dev": "vite",

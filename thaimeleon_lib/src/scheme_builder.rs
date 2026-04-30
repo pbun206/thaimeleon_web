@@ -76,8 +76,8 @@ pub struct ThemeConfig {
     pub base_lightness_maximum: f32,
     pub surface_distance: f32,
 
-    pub set_2_dps_contrast: f32,
     pub set_2_lightness_correction: f32,
+    pub faint_dps_contrast: f32,
     pub set_3_dps_contrast: f32,
     pub set_4_dps_contrast: f32,
     pub set_5_dps_contrast: f32,
@@ -110,8 +110,8 @@ impl ThemeConfig {
             base_lightness_minimum: 0.964,
             base_lightness_maximum: 0.964,
             surface_distance: 0.0225,
-            set_2_dps_contrast: 7.5,
             set_2_lightness_correction: 0.01,
+            faint_dps_contrast: 15.0,
             set_3_dps_contrast: 40.0,
             set_4_dps_contrast: 65.0,
             set_5_dps_contrast: 80.0,
@@ -150,8 +150,8 @@ impl ThemeConfig {
             base_lightness_minimum: 0.1,
             base_lightness_maximum: 0.185,
             surface_distance: 0.06,
-            set_2_dps_contrast: 7.5,
             set_2_lightness_correction: 0.01,
+            faint_dps_contrast: 15.0,
             set_3_dps_contrast: 30.0,
             set_4_dps_contrast: 72.5,
             set_5_dps_contrast: 82.5,
@@ -295,6 +295,11 @@ impl<'a> SchemeBuilderWithHints<'a> {
             self.dominant_color.lightness,
         );
         let set_2_lightness = base_lightness + polarity * self.theme_config.surface_distance * 4.0;
+        let faint_lightness = contrast::lightness_from_contrast(
+            base_lightness,
+            Contrast::DPSContrast(self.theme_config.faint_dps_contrast),
+            self.is_light_theme,
+        );
         let set_3_lightness = contrast::lightness_from_contrast(
             base_lightness,
             Contrast::DPSContrast(self.theme_config.set_3_dps_contrast),
@@ -384,6 +389,10 @@ impl<'a> SchemeBuilderWithHints<'a> {
                 .neutral_background_builder_template(
                     base_lightness + polarity * self.theme_config.surface_distance * 3.0,
                 )
+                .generate(self.profile)?
+                .into_rgb(),
+            faint: self
+                .neutral_foreground_builder_template(faint_lightness)
                 .generate(self.profile)?
                 .into_rgb(),
             muted: self

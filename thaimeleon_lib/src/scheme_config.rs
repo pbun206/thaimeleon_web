@@ -14,8 +14,8 @@ pub struct ThemeConfigPartial {
     pub base_lightness_maximum: Option<f32>,
     pub surface_distance: Option<f32>,
 
-    pub set_2_dps_contrast: Option<f32>,
     pub set_2_lightness_correction: Option<f32>,
+    pub faint_dps_contrast: Option<f32>,
     pub set_3_dps_contrast: Option<f32>,
     pub set_4_dps_contrast: Option<f32>,
     pub set_5_dps_contrast: Option<f32>,
@@ -57,12 +57,12 @@ impl ThemeConfigPartial {
                 .base_lightness_maximum
                 .unwrap_or(default.base_lightness_maximum),
             surface_distance: self.surface_distance.unwrap_or(default.surface_distance),
-            set_2_dps_contrast: self
-                .set_2_dps_contrast
-                .unwrap_or(default.set_2_dps_contrast),
             set_2_lightness_correction: self
                 .set_2_lightness_correction
                 .unwrap_or(default.set_2_lightness_correction),
+            faint_dps_contrast: self
+                .faint_dps_contrast
+                .unwrap_or(default.faint_dps_contrast),
             set_3_dps_contrast: self
                 .set_3_dps_contrast
                 .unwrap_or(default.set_3_dps_contrast),

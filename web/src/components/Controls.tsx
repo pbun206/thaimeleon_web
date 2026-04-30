@@ -4,22 +4,36 @@ import { Config, DEFAULT_CONFIG, ThemeConfig } from "../types";
 type Props = { config: Config; onChange: (c: Config) => void };
 
 type DpsKey =
-  | "set_2_dps_contrast"
+  | "faint_dps_contrast"
   | "set_3_dps_contrast"
   | "set_4_dps_contrast"
   | "set_5_dps_contrast";
 
 const DPS_KEYS: DpsKey[] = [
-  "set_2_dps_contrast",
+  "faint_dps_contrast",
   "set_3_dps_contrast",
   "set_4_dps_contrast",
   "set_5_dps_contrast",
 ];
 
+const DPS_RANGE: Record<DpsKey, [number, number]> = {
+  faint_dps_contrast: [10, 50],
+  set_3_dps_contrast: [20, 90],
+  set_4_dps_contrast: [20, 90],
+  set_5_dps_contrast: [20, 90],
+};
+
 export default function Controls({ config, onChange }: Props) {
   const [draft, setDraft] = useState<Config>(config);
   const [jsonText, setJsonText] = useState(JSON.stringify(config, null, 2));
   const [jsonError, setJsonError] = useState<string | null>(null);
+  const [copied, setCopied] = useState(false);
+
+  const copy = () => {
+    navigator.clipboard.writeText(JSON.stringify(config, null, 2));
+    setCopied(true);
+    setTimeout(() => setCopied(false), 900);
+  };
 
   useEffect(() => {
     setDraft(config);
@@ -69,8 +83,7 @@ export default function Controls({ config, onChange }: Props) {
         <div key={theme} className="dps-group">
           <div className="dps-group-label">{theme} dps contrast</div>
           {DPS_KEYS.map((k) => {
-            const min = 20;
-            const max = 90;
+            const [min, max] = DPS_RANGE[k];
             const v = draft[theme][k];
             const pct = Math.max(0, Math.min(1, (v - min) / (max - min))) * 100;
             return (
@@ -105,13 +118,7 @@ export default function Controls({ config, onChange }: Props) {
         </button>
         <button onClick={applyJson}>apply json</button>
         <button onClick={() => onChange(DEFAULT_CONFIG)}>reset</button>
-        <button
-          onClick={() =>
-            navigator.clipboard.writeText(JSON.stringify(config, null, 2))
-          }
-        >
-          copy
-        </button>
+        <button onClick={copy}>{copied ? "copied!" : "copy"}</button>
       </div>
       {jsonError && <p className="error">{jsonError}</p>}
     </details>

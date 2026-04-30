@@ -18,6 +18,7 @@ pub struct ThaimeleonScheme {
     pub surface_high: Srgb<u8>,
     pub surface_higher: Srgb<u8>,
     pub surface_highest: Srgb<u8>,
+    pub faint: Srgb<u8>,
     pub muted: Srgb<u8>,
     pub subtext: Srgb<u8>,
     pub text: Srgb<u8>,

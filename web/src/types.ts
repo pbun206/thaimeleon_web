@@ -16,6 +16,7 @@ export type Surfaces = {
   surface_high: string;
   surface_higher: string;
   surface_highest: string;
+  faint: string;
   muted: string;
   subtext: string;
   text: string;
@@ -40,8 +41,8 @@ export type ThemeConfig = {
   base_lightness_minimum: number;
   base_lightness_maximum: number;
   surface_distance: number;
-  set_2_dps_contrast: number;
   set_2_lightness_correction: number;
+  faint_dps_contrast: number;
   set_3_dps_contrast: number;
   set_4_dps_contrast: number;
   set_5_dps_contrast: number;
@@ -80,8 +81,8 @@ export const DEFAULT_LIGHT: ThemeConfig = {
   base_lightness_minimum: 0.964,
   base_lightness_maximum: 0.964,
   surface_distance: 0.0225,
-  set_2_dps_contrast: 7.5,
   set_2_lightness_correction: 0.01,
+  faint_dps_contrast: 15.0,
   set_3_dps_contrast: 40.0,
   set_4_dps_contrast: 65.0,
   set_5_dps_contrast: 80.0,
@@ -113,8 +114,8 @@ export const DEFAULT_DARK: ThemeConfig = {
   base_lightness_minimum: 0.1,
   base_lightness_maximum: 0.185,
   surface_distance: 0.06,
-  set_2_dps_contrast: 7.5,
   set_2_lightness_correction: 0.01,
+  faint_dps_contrast: 15.0,
   set_3_dps_contrast: 30.0,
   set_4_dps_contrast: 72.5,
   set_5_dps_contrast: 82.5,
