@@ -379,3 +379,10 @@ button:disabled {
   margin: 0;
 }
 
+@media (max-width: 480px) {
+  .row {
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+  }
+}
+
