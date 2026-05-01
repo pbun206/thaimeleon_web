@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import init, { generate_scheme } from "./wasm/thaimeleon_lib.js";
 import { Config, DEFAULT_CONFIG, Scheme } from "./types";
-import defaultSchemes from "./defaultSchemes.json";
+import defaultData from "./defaultSchemes.json";
 import ImagePicker, { decodeFromUrl } from "./components/ImagePicker";
 import Swatches from "./components/Swatches";
 import Controls from "./components/Controls";
@@ -10,6 +10,9 @@ import ThemeToggle, { Mode } from "./components/ThemeToggle";
 import Info from "./components/Info";
 
 type Pair = { light: Scheme; dark: Scheme } | null;
+
+const defaultSchemes = { light: defaultData.light, dark: defaultData.dark };
+const DEFAULT_CONFIG_JSON = JSON.stringify(DEFAULT_CONFIG);
 
 function applyScheme(s: Scheme) {
   const r = document.documentElement.style;
@@ -55,7 +58,9 @@ export default function App() {
       .then((p) => {
         if (!cancelled) setPixels(p);
       })
-      .catch(() => {});
+      .catch((e) => {
+        if (!cancelled) setError(`could not load default image: ${String(e)}`);
+      });
     return () => {
       cancelled = true;
     };
@@ -76,6 +81,14 @@ export default function App() {
 
   useEffect(() => {
     if (!pixels) return;
+    if (
+      pixels.url === "default.webp" &&
+      JSON.stringify(config) === DEFAULT_CONFIG_JSON
+    ) {
+      setSchemes(defaultSchemes as Pair);
+      setLoading(false);
+      return;
+    }
     setLoading(true);
     setError(null);
     let cancelled = false;
@@ -142,7 +155,7 @@ export default function App() {
       {schemes && !loading && (
         <Results light={schemes.light} dark={schemes.dark} />
       )}
-      <Controls config={config} onChange={setConfig} />
+      {pixels && <Controls config={config} onChange={setConfig} />}
       <Info />
     </main>
   );

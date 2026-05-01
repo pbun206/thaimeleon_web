@@ -35,5 +35,12 @@ const light = wasm.generate_scheme(rgba, w, h, FORCE_LIGHT, undefined);
 const dark = wasm.generate_scheme(rgba, w, h, FORCE_DARK, undefined);
 
 const out = join(root, "src/defaultSchemes.json");
-writeFileSync(out, JSON.stringify({ light, dark }, null, 2) + "\n");
+const payload = {
+  width: w,
+  height: h,
+  rgba: Buffer.from(rgba).toString("base64"),
+  light,
+  dark,
+};
+writeFileSync(out, JSON.stringify(payload, null, 2) + "\n");
 console.log(`wrote ${out} (${w}x${h})`);

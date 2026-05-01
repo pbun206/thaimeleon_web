@@ -147,6 +147,13 @@ export default function Info() {
         </ul>
       </Block>
 
+      <Block q="Huh, these colors seem random">
+        <p>
+          some browsers mess around canvas data to prevent tracking. however,
+          that breaks this website. make sure enable canvas for this website
+        </p>
+      </Block>
+
       <Block q="this is slow!">
         <p>
           from testing, the largest bottleneck of the program is purely opening
