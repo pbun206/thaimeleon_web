@@ -147,7 +147,7 @@ export default function Info() {
         </ul>
       </Block>
 
-      <Block q="Huh, these colors seem random">
+      <Block q="colors look normal but they don't match with the image!">
         <p>
           some browsers mess around canvas data to prevent tracking. however,
           that breaks this website. make sure enable canvas for this website
