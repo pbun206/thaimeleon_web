@@ -379,8 +379,8 @@ button:disabled {
   margin: 0;
 }
 
-@media (max-width: 480px) {
-  .row {
+@media (max-width: 700px) {
+  .scheme > .row:first-child {
     display: grid;
     grid-template-columns: repeat(5, 1fr);
   }
